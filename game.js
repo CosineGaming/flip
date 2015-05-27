@@ -103,16 +103,15 @@ function initialize()
                 [4, 46]
         },
         {
-            // Easy 4-line puzzle xD
             lines :
             [
-                [10, 0, 0, 100],
-                [40, 0, 0, 100],
-                [0, 50, 100, 0],
+                [30, 0, 0, 100],
+                [50, 0, 0, 100],
+                [0, 70, 100, -30],
                 [0, 70, 100, 0]
             ],
             answer :
-                [[1,0,60],[0,1,-40],[0,0,1]]
+                [[-0.834862385321101,-0.5504587155963304,105.13761467889911],[-0.5504587155963301,0.8348623853211009,-10.45871559633028],[0,0,1]]
             , player :
                 [4, 46]
         },
@@ -177,6 +176,7 @@ function setLevel(lvl)
     {
         levelLines.push(addLine(lines[i]));
     }
+    lastLine = null;
 
     matrix = numeric.identity(3);
     tweenTo = null;
@@ -210,30 +210,54 @@ function setLevel(lvl)
 function getLine(x, y)
 {
 
-    var margin = 5;
+    var margin = 12;
+    var closest = null;
+    var closest_ds = null;
 
     setup = levels[level].lines;
+
     for (var i=0; i<lines.length; i++)
     {
+
         var line = lines[i];
-        var y_equiv = slope(line) * (x - line[0]) + line[1];
-        if (y_equiv)
+        var d_squared = null;
+
+        var m = slope(line);
+        if (m)
         {
-            if (Math.abs(y - y_equiv) < margin)
-            {
-                return i;
-            }
+            var b = line[1] - m*line[0];
+            var near_x = ((y + x/m) - b) / (m + 1/m);
+            var near_y = m*near_x + b;
+            var d_x = x - near_x;
+            var d_y = y - near_y;
+            d_squared = d_x*d_x + d_y*d_y;
         }
         else
         {
-            if (Math.abs(x - line[0]) < margin)
+            var distance = null;
+            if (m == null)
             {
-                return i;
+                distance = x - line[0];
+            }
+            else
+            {
+                distance = y - line[1];
+            }
+            d_squared = distance*distance;
+        }
+
+        if (d_squared < margin)
+        {
+            if (closest == null || d_squared < closest_ds)
+            {
+                closest = i;
+                closest_ds = d_squared;
             }
         }
+
     }
 
-    return null;
+    return closest;
 
 }
 
