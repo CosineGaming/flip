@@ -27,6 +27,8 @@ var displayMatrix = null;
 var tweenDelta = null;
 var tweenHandle = null;
 
+var startedTime = null;
+
 var version = "0.0";
 
 function initialize()
@@ -149,12 +151,16 @@ function initialize()
             // 2-V-0-H-2-D
             lines :
             [
-                //
+                [20, 0, 0, 100],
+                [50, 0, 0, 100],
+                [10, 0, 90, 70],
+                [0, 70, 100, -50]
             ],
             answer :
-                //
+                [[-0.24615384615384622,-0.9692307692307695,76.15384615384615],[0.9692307692307695,-0.24615384615384622,76.76923076923077],[0,0,1]]
             , player :
-                [4, 46]
+                [4, 46],
+            par: 6
         },
         {
             // Cross with two diagonals, containing a V shape
@@ -170,7 +176,7 @@ function initialize()
                 [[0.6106926463383254,-0.7918677236182143,102.80083691920044],[0.7918677236182146,0.6106926463383255,46.69157747803904],[0,0,1]]
             , player :
                 [4, 46]
-        },
+        }/*,
         {
             // 1-V-0-H-3-D
             lines :
@@ -181,7 +187,7 @@ function initialize()
                 //
             , player :
                 [4, 46]
-        }
+        }*/
     ];
 
     size = window.innerHeight;
@@ -199,6 +205,7 @@ function initialize()
     answer = game.image("assets/target.svg", 8, 8)
 
     score = 0;
+    startTime = new Date();
 
     if (!loadLevel())
     {
@@ -272,7 +279,10 @@ function setLevel(lvl)
     onParText.hide();
     levelText.text("LEVEL: " + (level + 1));
 
-    answer.transform("matrix", transformString(levels[level].answer));
+    if (levels[level].answer)
+    {
+        answer.transform("matrix", transformString(levels[level].answer));
+    }
 
     redraw();
 
@@ -388,6 +398,7 @@ function clicked(e)
         }
         if (matEq(matrix, levels[level].answer))
         {
+            sendData();
             if (moves == levels[level].par)
             {
                 onParText.show();
@@ -588,6 +599,19 @@ function slope(line)
     {
         return line[3] / line[2];
     }
+}
+
+function sendData()
+{
+
+    // Send the time it took to beat the level to CG so I can optimize difficulty
+    var now = new Date();
+    var time = Math.floor((now - startTime) / 1000);
+    var req = new XMLHttpRequest();
+    req.open("get", "http://localhost:8080/flip/data?level="+level+"&time="+time+"&moves="+moves, true);
+    req.send();
+    startTime = now;
+
 }
 
 function addLine(line)
