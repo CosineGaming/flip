@@ -27,6 +27,8 @@ var displayMatrix = null;
 var tweenDelta = null;
 var tweenHandle = null;
 
+var version = "0.0";
+
 function initialize()
 {
 
@@ -140,10 +142,23 @@ function initialize()
             answer :
                 [[-0.7241379310344828,0.689655172413793,42.11676340047798],[0.6896551724137929,0.7241379310344827,-5.995220211676354],[0,0,1]]
             , player :
+                [4, 46],
+            par: 7
+        },
+        {
+            // 2-V-0-H-2-D
+            lines :
+            [
+                //
+            ],
+            answer :
+                //
+            , player :
                 [4, 46]
         },
         {
             // Cross with two diagonals, containing a V shape
+            // TODO: Delete?
             lines :
             [
                 [0, 10, 50, 90],
@@ -160,13 +175,10 @@ function initialize()
             // 1-V-0-H-3-D
             lines :
             [
-                [0, 10, 50, 90],
-                [50, 0, 0, 100],
-                [0, 60, 100, 0],
-                [0, 40, 100, -10]
+                //
             ],
             answer :
-                [[0.6106926463383254,-0.7918677236182143,102.80083691920044],[0.7918677236182146,0.6106926463383255,46.69157747803904],[0,0,1]]
+                //
             , player :
                 [4, 46]
         }
@@ -188,7 +200,10 @@ function initialize()
 
     score = 0;
 
-    setLevel(0);//levels.length - 1);
+    if (!loadLevel())
+    {
+        setLevel(0);
+    }
 
 }
 
@@ -257,8 +272,38 @@ function setLevel(lvl)
     onParText.hide();
     levelText.text("LEVEL: " + (level + 1));
 
-    redraw();
     answer.transform("matrix", transformString(levels[level].answer));
+
+    redraw();
+
+    localStorage.setItem("version", version);
+    localStorage.setItem("score", score);
+    localStorage.setItem("level", level);
+
+}
+
+function loadLevel()
+{
+
+    var saveVersion = localStorage.getItem("version");
+    if (saveVersion)
+    {
+        if (saveVersion == version)
+        {
+            score = parseInt(localStorage.getItem("score"));
+            setLevel(parseInt(localStorage.getItem("level")));
+            return true;
+        }
+        else
+        {
+            alert("Sorry, your save game was from an unsupported version.");
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
 
 }
 
@@ -333,7 +378,7 @@ function clicked(e)
 
         moves += 1;
         tweenDelta = numeric.div(numeric.sub(matrix, displayMatrix), 20);
-        tweenHandle = window.requestAnimationFrame(tween);
+        tweenHandle = requestAnimationFrame(tween);
 
         var center = numeric.dot(matrix, [player.x() + 4, player.y() + 4, 1]);
         if (center[0] < 0 || center[0] > 100 || center[1] < 0 || center[1] > 100)
@@ -478,7 +523,7 @@ function tween()
     }
     if (!done)
     {
-        tweenHandle = window.requestAnimationFrame(tween);
+        tweenHandle = requestAnimationFrame(tween);
     }
     else
     {
@@ -492,7 +537,7 @@ function skipTween()
 {
     if (tweenHandle)
     {
-        window.cancelAnimationFrame(tweenHandle);
+        cancelAnimationFrame(tweenHandle);
         tweenHandle = null;
     }
     displayMatrix = matrix;
@@ -557,4 +602,4 @@ function transformString(mat)
         "," + mat[0][2] + "," + mat[1][2]
 }
 
-window.onload = initialize;
+onload = initialize;
