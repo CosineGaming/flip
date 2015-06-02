@@ -205,8 +205,8 @@ function initialize()
     game = SVG("game").viewbox(0,0,100,100);
     lineGroup = game.group();
     var playerSize = 8 * firefoxBlurFix;
-    player = game.image("assets/player.svg", playerSize, playerSize);
-    answer = game.image("assets/target.svg", playerSize, playerSize);
+    player = game.image("/static/flip/assets/player.svg", playerSize, playerSize);
+    answer = game.image("/static/flip/assets/target.svg", playerSize, playerSize);
 
     score = 0;
     startTime = new Date();
