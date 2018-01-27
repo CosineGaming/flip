@@ -119,6 +119,7 @@ function initialize()
 	{
 		var text = helpGroup.text("Sorry, but your save is from an unsupported version.\nHINT: Press 9 and 0 to navigate levels.").font(font).move(12, 25);
 		color(text, "help");
+		setLevel(1);
 	}
 
 }
@@ -321,6 +322,17 @@ function setLevel(lvl)
 function loadLevel()
 {
 
+	try
+	{
+		localStorage.setItem("test", "test");
+		localStorage.removeItem("test");
+	}
+	catch(e)
+	{
+		// localStorage is blocked or not supported
+		setLevel(0);
+		return false;
+	}
 	var saveVersion = localStorage.getItem("version");
 	if (saveVersion)
 	{
