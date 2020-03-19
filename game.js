@@ -581,9 +581,7 @@ function pressed(e)
 
 }
 
-function getReflection(original, line)
-{
-
+function getReflectionMatrix(line) {
 	var m = slope(line);
 	var flip = null;
 	if (m != null && m != 0)
@@ -609,7 +607,13 @@ function getReflection(original, line)
 			flip = new SVG.Matrix(1, 0, 0, -1, 0, 2 * line[1]);
 		}
 	}
-	return flip.multiply(original);
+	return flip;
+}
+
+function getReflection(original, line)
+{
+
+	return getReflectionMatrix(line).multiply(original);
 
 }
 
